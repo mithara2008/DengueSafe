@@ -68,6 +68,7 @@ export default function UploadDataScreen({ navigation }) {
                 hospitalName: selectedFacility.name,
                 district: selectedFacility.district,
                 province: selectedFacility.province || '',
+                location: selectedFacility.location || { lat: 0, lng: 0 },
                 diseaseType: 'dengue',
                 caseCount: parseInt(caseCount),
                 deathCount: parseInt(deathCount) || 0,
