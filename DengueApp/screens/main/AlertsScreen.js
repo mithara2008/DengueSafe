@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  TouchableOpacity, RefreshControl, ActivityIndicator
+  TouchableOpacity, RefreshControl, ActivityIndicator,
+  Platform
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../constants/colors';
 import { getAlerts } from '../../services/api';
+import AnimatedLoading from '../../components/AnimatedLoading';
 
 export default function AlertsScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -22,7 +25,7 @@ export default function AlertsScreen() {
       risk: 'High',
       riskColor: COLORS.danger,
       time: '2 hours ago',
-      icon: '📈',
+      icon: 'trending-up-outline',
       tips: ['Remove stagnant water', 'Use mosquito repellent', 'Wear long sleeves'],
     },
     {
@@ -34,7 +37,7 @@ export default function AlertsScreen() {
       risk: 'High',
       riskColor: COLORS.danger,
       time: '5 hours ago',
-      icon: '⚠️',
+      icon: 'warning-outline',
       tips: ['Check water containers', 'Use bed nets at night', 'Keep surroundings clean'],
     },
     {
@@ -46,7 +49,7 @@ export default function AlertsScreen() {
       risk: 'Medium',
       riskColor: COLORS.warning,
       time: '1 day ago',
-      icon: '📊',
+      icon: 'analytics-outline',
       tips: ['Monitor symptoms', 'Clean gutters', 'Avoid outdoor activities at dawn/dusk'],
     },
     {
@@ -58,7 +61,7 @@ export default function AlertsScreen() {
       risk: 'Info',
       riskColor: COLORS.primary,
       time: '2 days ago',
-      icon: '💡',
+      icon: 'bulb-outline',
       tips: ['Inspect flower pots', 'Check roof gutters', 'Empty unused containers'],
     },
     {
@@ -70,7 +73,7 @@ export default function AlertsScreen() {
       risk: 'Low',
       riskColor: COLORS.safe,
       time: '3 days ago',
-      icon: '✅',
+      icon: 'shield-checkmark-outline',
       tips: ['Keep up good practices', 'Report any cases to health authorities'],
     },
   ];
@@ -78,13 +81,13 @@ export default function AlertsScreen() {
   const fetchAlerts = async () => {
     try {
       const data = await getAlerts();
-      // Add riskColor based on risk level
       const coloredData = data.map(alert => ({
         ...alert,
+        icon: alert.risk === 'High' ? 'warning-outline' : alert.risk === 'Medium' ? 'analytics-outline' : 'shield-checkmark-outline',
         riskColor:
           alert.risk === 'High' ? COLORS.danger :
-          alert.risk === 'Medium' ? COLORS.warning :
-          alert.risk === 'Low' ? COLORS.safe : COLORS.primary,
+            alert.risk === 'Medium' ? COLORS.warning :
+              alert.risk === 'Low' ? COLORS.safe : COLORS.primary,
       }));
       setAlerts(coloredData);
     } catch (error) {
@@ -110,17 +113,13 @@ export default function AlertsScreen() {
     : alerts.filter(a => a.type === activeTab);
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={styles.loadingText}>Loading alerts...</Text>
-      </View>
-    );
+    return <AnimatedLoading message="Loading alerts..." />;
   }
 
   return (
     <ScrollView
       style={styles.container}
+      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -131,73 +130,80 @@ export default function AlertsScreen() {
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>🔔 Alerts & Predictions</Text>
+        <Text style={styles.headerTitle}>Alerts & Predictions</Text>
         <Text style={styles.headerSubtitle}>
           Predictive alerts based on ML analysis — stay safe, not scared!
         </Text>
       </View>
 
-      {/* Important Notice */}
-      <View style={styles.noticeBanner}>
-        <Text style={styles.noticeIcon}>ℹ️</Text>
-        <Text style={styles.noticeText}>
-          These alerts are predictive forecasts to help you stay prepared. They are not confirmed outbreak announcements.
-        </Text>
-      </View>
+      <View style={styles.contentContainer}>
+        {/* Important Notice */}
+        <View style={styles.noticeBanner}>
+          <Ionicons name="information-circle-outline" size={24} color="#0284C7" style={styles.noticeIcon} />
+          <Text style={styles.noticeText}>
+            These alerts are predictive forecasts to help you stay prepared. They are not confirmed outbreak announcements.
+          </Text>
+        </View>
 
-      {/* Tabs */}
-      <View style={styles.tabContainer}>
-        {['all', 'prediction', 'awareness'].map(tab => (
-          <TouchableOpacity
-            key={tab}
-            style={[styles.tab, activeTab === tab && styles.activeTab]}
-            onPress={() => setActiveTab(tab)}
-          >
-            <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
-              {tab === 'all' ? 'All' : tab === 'prediction' ? 'Predictions' : 'Awareness'}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        {/* Tabs */}
+        <View style={styles.tabContainer}>
+          {['all', 'prediction', 'awareness'].map(tab => (
+            <TouchableOpacity
+              key={tab}
+              style={[styles.tab, activeTab === tab && styles.activeTab]}
+              onPress={() => setActiveTab(tab)}
+            >
+              <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+                {tab === 'all' ? 'All' : tab === 'prediction' ? 'Predictions' : 'Awareness'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-      {/* Alerts List */}
-      <View style={styles.alertsList}>
-        {filteredAlerts.map((alert, index) => (
-          <View key={alert.id || index} style={styles.alertCard}>
-            <View style={styles.alertHeader}>
-              <Text style={styles.alertIcon}>{alert.icon}</Text>
-              <View style={styles.alertTitleContainer}>
-                <Text style={styles.alertTitle}>{alert.title}</Text>
-                <Text style={styles.alertTime}>{alert.time}</Text>
+        {/* Alerts List */}
+        <View style={styles.alertsList}>
+          {filteredAlerts.map((alert, index) => (
+            <View key={alert.id || index} style={styles.alertCard}>
+              <View style={styles.alertHeader}>
+                <View style={[styles.iconWrapper, { backgroundColor: alert.riskColor + '20' }]}>
+                  <Ionicons name={alert.icon || 'notifications-outline'} size={22} color={alert.riskColor} />
+                </View>
+                <View style={styles.alertTitleContainer}>
+                  <Text style={styles.alertTitle}>{alert.title}</Text>
+                  <Text style={styles.alertTime}>{alert.time}</Text>
+                </View>
+                <View style={[styles.riskBadge, { backgroundColor: alert.riskColor + '20' }]}>
+                  <Text style={[styles.riskBadgeText, { color: alert.riskColor }]}>{alert.risk}</Text>
+                </View>
               </View>
-              <View style={[styles.riskBadge, { backgroundColor: alert.riskColor }]}>
-                <Text style={styles.riskBadgeText}>{alert.risk}</Text>
+
+              <View style={styles.districtRow}>
+                <Ionicons name="location" size={14} color={COLORS.textLight} style={styles.districtIcon} />
+                <Text style={styles.districtText}>{alert.district}</Text>
               </View>
-            </View>
 
-            <View style={styles.districtRow}>
-              <Text style={styles.districtIcon}>📍</Text>
-              <Text style={styles.districtText}>{alert.district}</Text>
-            </View>
+              <Text style={styles.alertMessage} numberOfLines={3}>{alert.message}</Text>
 
-            <Text style={styles.alertMessage}>{alert.message}</Text>
-
-            {alert.tips && alert.tips.length > 0 && (
-              <View style={styles.tipsContainer}>
-                <Text style={styles.tipsTitle}>🌿 What you can do:</Text>
-                {alert.tips.map((tip, i) => (
-                  <View key={i} style={styles.tipRow}>
-                    <Text style={styles.tipBullet}>•</Text>
-                    <Text style={styles.tipText}>{tip}</Text>
+              {alert.tips && alert.tips.length > 0 && (
+                <View style={styles.tipsContainer}>
+                  <View style={styles.tipsHeader}>
+                    <Ionicons name="leaf-outline" size={16} color={COLORS.primary} />
+                    <Text style={styles.tipsTitle}>What you can do:</Text>
                   </View>
-                ))}
-              </View>
-            )}
-          </View>
-        ))}
-      </View>
+                  {alert.tips.map((tip, i) => (
+                    <View key={i} style={styles.tipRow}>
+                      <View style={styles.tipBullet} />
+                      <Text style={styles.tipText}>{tip}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
 
-      <View style={styles.bottomSpacing} />
+        <View style={styles.bottomSpacing} />
+      </View>
     </ScrollView>
   );
 }
@@ -210,67 +216,94 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.background,
   },
-  loadingText: { marginTop: 10, color: COLORS.textLight, fontSize: 14 },
+  loadingText: { marginTop: 12, color: COLORS.textLight, fontSize: 16, fontWeight: '500' },
   header: {
     backgroundColor: COLORS.primary,
-    padding: 25,
-    paddingTop: 55,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
+    padding: 24,
+    paddingTop: Platform.OS === 'ios' ? 60 : 50,
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    elevation: 8,
+    paddingBottom: 40,
   },
-  headerTitle: { color: COLORS.white, fontSize: 24, fontWeight: 'bold' },
-  headerSubtitle: { color: '#C8E6C9', fontSize: 12, marginTop: 5, lineHeight: 18 },
+  headerTitle: { color: COLORS.white, fontSize: 26, fontWeight: '800', letterSpacing: 0.5 },
+  headerSubtitle: { color: 'rgba(255,255,255,0.9)', fontSize: 14, marginTop: 6, lineHeight: 20 },
+  contentContainer: {
+    paddingHorizontal: 20,
+    marginTop: -20,
+  },
   noticeBanner: {
-    backgroundColor: '#E3F2FD',
-    margin: 15,
-    padding: 12,
-    borderRadius: 10,
+    backgroundColor: '#F0F9FF',
+    padding: 16,
+    borderRadius: 16,
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    borderLeftWidth: 4,
-    borderLeftColor: '#1976D2',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E0F2FE',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+    marginBottom: 20,
   },
-  noticeIcon: { fontSize: 16, marginRight: 8, marginTop: 2 },
-  noticeText: { flex: 1, fontSize: 12, color: '#1565C0', lineHeight: 18 },
+  noticeIcon: { marginRight: 12 },
+  noticeText: { flex: 1, fontSize: 13, color: '#0369A1', lineHeight: 20, fontWeight: '500' },
   tabContainer: {
     flexDirection: 'row',
-    marginHorizontal: 15,
-    marginBottom: 10,
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 4,
-  },
-  tab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 8 },
-  activeTab: { backgroundColor: COLORS.primary },
-  tabText: { fontSize: 13, color: COLORS.textLight, fontWeight: '600' },
-  activeTabText: { color: COLORS.white },
-  alertsList: { paddingHorizontal: 15 },
-  alertCard: {
     backgroundColor: COLORS.white,
     borderRadius: 14,
-    padding: 15,
-    marginBottom: 12,
-    elevation: 2,
+    padding: 4,
+    marginBottom: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  alertHeader: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 },
-  alertIcon: { fontSize: 24, marginRight: 10 },
+  tab: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 10 },
+  activeTab: { backgroundColor: COLORS.primary },
+  tabText: { fontSize: 14, color: COLORS.textLight, fontWeight: '600' },
+  activeTabText: { color: COLORS.white, fontWeight: '700' },
+  alertsList: { paddingBottom: 20 },
+  alertCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 20,
+    padding: 18,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  alertHeader: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
+  iconWrapper: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
   alertTitleContainer: { flex: 1 },
-  alertTitle: { fontSize: 15, fontWeight: 'bold', color: COLORS.text },
-  alertTime: { fontSize: 11, color: COLORS.textLight, marginTop: 2 },
-  riskBadge: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
-  riskBadgeText: { color: COLORS.white, fontSize: 11, fontWeight: 'bold' },
-  districtRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  districtIcon: { fontSize: 12, marginRight: 4 },
-  districtText: { fontSize: 13, color: COLORS.primary, fontWeight: '600' },
-  alertMessage: { fontSize: 13, color: COLORS.text, lineHeight: 20, marginBottom: 12 },
-  tipsContainer: { backgroundColor: '#F1F8E9', borderRadius: 8, padding: 10 },
-  tipsTitle: { fontSize: 13, fontWeight: 'bold', color: COLORS.primary, marginBottom: 6 },
-  tipRow: { flexDirection: 'row', marginBottom: 4 },
-  tipBullet: { color: COLORS.primary, marginRight: 6, fontSize: 13 },
-  tipText: { fontSize: 12, color: COLORS.text, flex: 1 },
-  bottomSpacing: { height: 20 },
+  alertTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text, marginBottom: 4 },
+  alertTime: { fontSize: 12, color: COLORS.textLight, fontWeight: '500' },
+  riskBadge: { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
+  riskBadgeText: { fontSize: 12, fontWeight: '800' },
+  districtRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  districtIcon: { marginRight: 6 },
+  districtText: { fontSize: 14, color: COLORS.textLight, fontWeight: '600' },
+  alertMessage: { fontSize: 14, color: COLORS.text, lineHeight: 22, marginBottom: 16 },
+  tipsContainer: { backgroundColor: '#F8FAFC', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#F1F5F9' },
+  tipsHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  tipsTitle: { fontSize: 13, fontWeight: '700', color: COLORS.primary, marginLeft: 6 },
+  tipRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  tipBullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: COLORS.primary, marginRight: 8 },
+  tipText: { fontSize: 13, color: COLORS.text, flex: 1, lineHeight: 18 },
+  bottomSpacing: { height: 90 },
 });

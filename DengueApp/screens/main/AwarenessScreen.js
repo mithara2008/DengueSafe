@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  TouchableOpacity
+  TouchableOpacity, Platform
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../constants/colors';
 
 export default function AwarenessScreen() {
@@ -16,11 +17,11 @@ export default function AwarenessScreen() {
       categories: [
         {
           id: 1,
-          icon: '💧',
+          icon: 'water-outline',
           title: 'Remove Stagnant Water',
           summary: 'Eliminate mosquito breeding sites around your home',
-          color: '#1565C0',
-          bgColor: '#E3F2FD',
+          color: '#0284C7',
+          bgColor: '#F0F9FF',
           tips: [
             'Empty and clean flower pots every week',
             'Cover water storage tanks tightly',
@@ -32,11 +33,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 2,
-          icon: '🏠',
+          icon: 'home-outline',
           title: 'Protect Your Home',
           summary: 'Keep mosquitoes out of your living spaces',
-          color: '#2E7D32',
-          bgColor: '#E8F5E9',
+          color: '#16A34A',
+          bgColor: '#F0FDF4',
           tips: [
             'Install wire mesh on windows and doors',
             'Use mosquito nets while sleeping',
@@ -48,11 +49,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 3,
-          icon: '🦟',
+          icon: 'thermometer-outline',
           title: 'Know the Symptoms',
           summary: 'Recognize dengue early for better treatment',
-          color: '#C62828',
-          bgColor: '#FFEBEE',
+          color: '#DC2626',
+          bgColor: '#FEF2F2',
           tips: [
             'Sudden high fever above 38°C',
             'Severe headache and eye pain',
@@ -64,11 +65,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 4,
-          icon: '🏥',
+          icon: 'medical-outline',
           title: 'When to Get Help',
           summary: 'Recognize warning signs that need urgent care',
-          color: '#E65100',
-          bgColor: '#FFF3E0',
+          color: '#EA580C',
+          bgColor: '#FFF7ED',
           tips: [
             'Severe stomach or abdominal pain',
             'Persistent vomiting more than 3 times',
@@ -80,11 +81,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 5,
-          icon: '🌧️',
+          icon: 'rainy-outline',
           title: 'Monsoon Season Tips',
           summary: 'Extra precautions during rainy season',
-          color: '#4527A0',
-          bgColor: '#EDE7F6',
+          color: '#7C3AED',
+          bgColor: '#F5F3FF',
           tips: [
             'Check your garden after every rainfall',
             'Ensure drains around your house are clear',
@@ -96,11 +97,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 6,
-          icon: '👨‍👩‍👧',
+          icon: 'people-outline',
           title: 'Community Action',
           summary: 'Work together to control outbreaks',
-          color: '#00695C',
-          bgColor: '#E0F2F1',
+          color: '#0D9488',
+          bgColor: '#F0FDFA',
           tips: [
             'Organize community clean-up campaigns',
             'Educate neighbors about prevention',
@@ -118,11 +119,11 @@ export default function AwarenessScreen() {
       categories: [
         {
           id: 1,
-          icon: '💧',
+          icon: 'water-outline',
           title: 'එකතු වූ ජලය ඉවත් කරන්න',
           summary: 'ගෙදර වටේ මදුරු බෝවන තැන් නැති කරන්න',
-          color: '#1565C0',
-          bgColor: '#E3F2FD',
+          color: '#0284C7',
+          bgColor: '#F0F9FF',
           tips: [
             'සතියකට වරක් මල් බඳුන් හිස් කර සෝදන්න',
             'ජල ටැංකි හොඳින් ආවරණය කරන්න',
@@ -134,11 +135,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 2,
-          icon: '🏠',
+          icon: 'home-outline',
           title: 'ඔබේ නිවස ආරක්ෂා කරන්න',
           summary: 'මදුරුවන් ගෙට ඇතුළු නොවෙන සේ කරන්න',
-          color: '#2E7D32',
-          bgColor: '#E8F5E9',
+          color: '#16A34A',
+          bgColor: '#F0FDF4',
           tips: [
             'ජනෙල් සහ දොරවල් ජාලකය ගසන්න',
             'නිදා ගැනීමේදී මදුරු දැල් භාවිතා කරන්න',
@@ -150,11 +151,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 3,
-          icon: '🦟',
+          icon: 'thermometer-outline',
           title: 'රෝග ලක්ෂණ දැනගන්න',
           summary: 'ඩෙංගු රෝගය ඉක්මනින් හඳුනාගන්න',
-          color: '#C62828',
-          bgColor: '#FFEBEE',
+          color: '#DC2626',
+          bgColor: '#FEF2F2',
           tips: [
             '38°C ට වඩා හදිසි උෂ්ණත්වය',
             'දරුණු හිසරදය සහ ඇස් වේදනාව',
@@ -166,11 +167,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 4,
-          icon: '🏥',
+          icon: 'medical-outline',
           title: 'හදිසි ප්‍රතිකාර',
           summary: 'හදිසි ප්‍රතිකාර අවශ්‍ය නිශාන හඳුනාගන්න',
-          color: '#E65100',
-          bgColor: '#FFF3E0',
+          color: '#EA580C',
+          bgColor: '#FFF7ED',
           tips: [
             'දරුණු උදර වේදනාව',
             'නතර නොවන වමනය',
@@ -188,11 +189,11 @@ export default function AwarenessScreen() {
       categories: [
         {
           id: 1,
-          icon: '💧',
+          icon: 'water-outline',
           title: 'தேங்கிய நீரை அகற்றுங்கள்',
           summary: 'வீட்டைச் சுற்றி கொசு வளரும் இடங்களை அகற்றுங்கள்',
-          color: '#1565C0',
-          bgColor: '#E3F2FD',
+          color: '#0284C7',
+          bgColor: '#F0F9FF',
           tips: [
             'வாரம் ஒருமுறை தொட்டிகளை காலி செய்யுங்கள்',
             'தண்ணீர் தொட்டிகளை மூடி வையுங்கள்',
@@ -204,11 +205,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 2,
-          icon: '🏠',
+          icon: 'home-outline',
           title: 'உங்கள் வீட்டை பாதுகாங்கள்',
           summary: 'கொசுக்கள் வீட்டில் நுழையாமல் தடுங்கள்',
-          color: '#2E7D32',
-          bgColor: '#E8F5E9',
+          color: '#16A34A',
+          bgColor: '#F0FDF4',
           tips: [
             'ஜன்னல்கள் மற்றும் கதவுகளில் கம்பி வலை பொருத்துங்கள்',
             'தூங்கும்போது கொசு வலை பயன்படுத்துங்கள்',
@@ -220,11 +221,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 3,
-          icon: '🦟',
+          icon: 'thermometer-outline',
           title: 'அறிகுறிகளை அறிந்துகொள்ளுங்கள்',
           summary: 'டெங்குவை ஆரம்பத்திலேயே கண்டறியுங்கள்',
-          color: '#C62828',
-          bgColor: '#FFEBEE',
+          color: '#DC2626',
+          bgColor: '#FEF2F2',
           tips: [
             '38°C க்கு மேல் திடீர் காய்ச்சல்',
             'கடுமையான தலைவலி மற்றும் கண் வலி',
@@ -236,11 +237,11 @@ export default function AwarenessScreen() {
         },
         {
           id: 4,
-          icon: '🏥',
+          icon: 'medical-outline',
           title: 'உடனடி சிகிச்சை',
           summary: 'அவசர சிகிச்சை தேவைப்படும் அறிகுறிகள்',
-          color: '#E65100',
-          bgColor: '#FFF3E0',
+          color: '#EA580C',
+          bgColor: '#FFF7ED',
           tips: [
             'கடுமையான வயிற்று வலி',
             'தொடர்ச்சியான வாந்தி',
@@ -260,15 +261,17 @@ export default function AwarenessScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>📚 {currentContent.title}</Text>
-        <Text style={styles.headerSubtitle}>{currentContent.subtitle}</Text>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>{currentContent.title}</Text>
+          <Text style={styles.headerSubtitle}>{currentContent.subtitle}</Text>
+        </View>
 
         {/* Language Selector */}
         <View style={styles.languageContainer}>
           {[
-            { key: 'english', label: '🇬🇧 EN' },
-            { key: 'sinhala', label: '🇱🇰 SI' },
-            { key: 'tamil', label: '🇱🇰 TA' },
+            { key: 'english', label: 'EN' },
+            { key: 'sinhala', label: 'SI' },
+            { key: 'tamil', label: 'TA' },
           ].map(lang => (
             <TouchableOpacity
               key={lang.key}
@@ -289,13 +292,13 @@ export default function AwarenessScreen() {
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.contentContainer}>
         {/* Emergency Banner */}
         <View style={styles.emergencyBanner}>
-          <Text style={styles.emergencyIcon}>🚨</Text>
+          <Ionicons name="warning-outline" size={28} color="#EF4444" style={styles.emergencyIcon} />
           <View style={styles.emergencyTextContainer}>
             <Text style={styles.emergencyTitle}>Emergency Hotlines</Text>
-            <Text style={styles.emergencyText}>Suwaseriya: 1990 | Health Line: 1999</Text>
+            <Text style={styles.emergencyText}>Suwaseriya: <Text style={{ fontWeight: '800' }}>1990</Text> | Health Line: <Text style={{ fontWeight: '800' }}>1999</Text></Text>
           </View>
         </View>
 
@@ -303,26 +306,30 @@ export default function AwarenessScreen() {
         {currentContent.categories.map(category => (
           <TouchableOpacity
             key={category.id}
-            style={[styles.card, { backgroundColor: category.bgColor }]}
+            activeOpacity={0.9}
+            style={[styles.card, { backgroundColor: COLORS.white }]}
             onPress={() => setExpandedCard(expandedCard === category.id ? null : category.id)}
           >
             <View style={styles.cardHeader}>
-              <View style={[styles.iconContainer, { backgroundColor: category.color }]}>
-                <Text style={styles.cardIcon}>{category.icon}</Text>
+              <View style={[styles.iconContainer, { backgroundColor: category.bgColor }]}>
+                <Ionicons name={category.icon} size={24} color={category.color} />
               </View>
               <View style={styles.cardTitleContainer}>
-                <Text style={[styles.cardTitle, { color: category.color }]}>
+                <Text style={styles.cardTitle}>
                   {category.title}
                 </Text>
                 <Text style={styles.cardSummary}>{category.summary}</Text>
               </View>
-              <Text style={styles.expandIcon}>
-                {expandedCard === category.id ? '▲' : '▼'}
-              </Text>
+              <Ionicons
+                name={expandedCard === category.id ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color={COLORS.textLight}
+                style={styles.expandIcon}
+              />
             </View>
 
             {expandedCard === category.id && (
-              <View style={styles.tipsContainer}>
+              <View style={[styles.tipsContainer, { borderTopColor: category.bgColor }]}>
                 {category.tips.map((tip, index) => (
                   <View key={index} style={styles.tipRow}>
                     <View style={[styles.tipBullet, { backgroundColor: category.color }]}>
@@ -338,8 +345,9 @@ export default function AwarenessScreen() {
 
         {/* Footer Note */}
         <View style={styles.footerNote}>
+          <Ionicons name="information-circle-outline" size={20} color={COLORS.primary} style={{ marginRight: 8 }} />
           <Text style={styles.footerNoteText}>
-            🌿 Information provided in partnership with Sri Lanka Ministry of Health
+            Information provided in partnership with Sri Lanka Ministry of Health
           </Text>
         </View>
 
@@ -353,120 +361,147 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   header: {
     backgroundColor: COLORS.primary,
-    padding: 20,
-    paddingTop: 55,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
+    paddingHorizontal: 24,
+    paddingTop: Platform.OS === 'ios' ? 60 : 50,
+    paddingBottom: 40,
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    elevation: 8,
   },
-  headerTitle: { color: '#FFFFFF', fontSize: 20, fontWeight: 'bold' },
-  headerSubtitle: { color: '#C8E6C9', fontSize: 12, marginTop: 3, marginBottom: 15 },
+  headerTitleContainer: { marginBottom: 20 },
+  headerTitle: { color: COLORS.white, fontSize: 24, fontWeight: '800', letterSpacing: 0.5 },
+  headerSubtitle: { color: 'rgba(255,255,255,0.9)', fontSize: 14, marginTop: 6, fontWeight: '500' },
   languageContainer: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
   },
   langBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: 'rgba(255,255,255,0.2)',
+    minWidth: 60,
+    alignItems: 'center',
   },
   langBtnActive: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.white,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
   langBtnText: {
-    color: '#C8E6C9',
-    fontSize: 13,
-    fontWeight: '600',
+    color: '#E2E8F0',
+    fontSize: 14,
+    fontWeight: '700',
   },
   langBtnTextActive: {
     color: COLORS.primary,
   },
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    marginTop: -40,
+  },
   emergencyBanner: {
-    backgroundColor: '#FFEBEE',
-    margin: 15,
-    padding: 12,
-    borderRadius: 12,
+    backgroundColor: '#FEF2F2',
+    padding: 18,
+    borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    borderLeftWidth: 4,
-    borderLeftColor: '#D32F2F',
-    gap: 10,
+    borderWidth: 1,
+    borderColor: '#FEE2E2',
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+    marginBottom: 20,
   },
-  emergencyIcon: { fontSize: 24 },
+  emergencyIcon: { marginRight: 14 },
   emergencyTextContainer: { flex: 1 },
   emergencyTitle: {
-    fontWeight: 'bold',
-    color: '#D32F2F',
-    fontSize: 14,
+    fontWeight: '800',
+    color: '#B91C1C',
+    fontSize: 16,
+    marginBottom: 4,
   },
   emergencyText: {
-    color: '#C62828',
-    fontSize: 13,
-    marginTop: 2,
+    color: '#991B1B',
+    fontSize: 14,
+    fontWeight: '500',
   },
   card: {
-    marginHorizontal: 15,
-    marginBottom: 10,
-    borderRadius: 14,
-    padding: 15,
+    marginBottom: 16,
+    borderRadius: 20,
+    padding: 18,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 16,
   },
   iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardIcon: { fontSize: 22 },
   cardTitleContainer: { flex: 1 },
-  cardTitle: { fontSize: 15, fontWeight: 'bold' },
-  cardSummary: { fontSize: 12, color: COLORS.textLight, marginTop: 2 },
-  expandIcon: { fontSize: 12, color: COLORS.textLight },
+  cardTitle: { fontSize: 16, fontWeight: '800', color: COLORS.text, marginBottom: 2 },
+  cardSummary: { fontSize: 13, color: COLORS.textLight, fontWeight: '500' },
+  expandIcon: { marginLeft: 8 },
   tipsContainer: {
-    marginTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.08)',
-    paddingTop: 12,
-    gap: 8,
+    marginTop: 16,
+    borderTopWidth: 2,
+    paddingTop: 16,
+    gap: 12,
   },
   tipRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
+    gap: 12,
   },
   tipBullet: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 1,
+    marginTop: 2,
   },
-  tipBulletText: { color: '#FFFFFF', fontSize: 10, fontWeight: 'bold' },
-  tipText: { flex: 1, fontSize: 13, color: COLORS.text, lineHeight: 20 },
+  tipBulletText: { color: COLORS.white, fontSize: 12, fontWeight: '800' },
+  tipText: { flex: 1, fontSize: 14, color: COLORS.text, lineHeight: 22, fontWeight: '500' },
   footerNote: {
-    margin: 15,
-    padding: 12,
-    backgroundColor: '#E8F5E9',
-    borderRadius: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    padding: 16,
+    backgroundColor: '#F0FDFA',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#CCFBF1',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   footerNoteText: {
-    fontSize: 12,
+    fontSize: 13,
     color: COLORS.primary,
-    textAlign: 'center',
+    fontWeight: '600',
+    flex: 1,
   },
-  bottomSpacing: { height: 20 },
+  bottomSpacing: { height: 90 },
 });

@@ -26,4 +26,25 @@ router.get('/heatmap', async (req, res) => {
   }
 });
 
+// Update case data (Mental Entry by PHI)
+router.post('/update-cases', async (req, res) => {
+  try {
+    const { district, cases } = req.body;
+    if (!district || cases === undefined) {
+      return res.status(400).json({ message: 'District and cases are required' });
+    }
+
+    // Find and update or create
+    const updatedCase = await Case.findOneAndUpdate(
+      { district },
+      { $set: { cases: parseInt(cases), updatedAt: new Date() } },
+      { new: true, upsert: true }
+    );
+
+    res.json({ message: 'Data updated successfully', updatedCase });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
 module.exports = router;

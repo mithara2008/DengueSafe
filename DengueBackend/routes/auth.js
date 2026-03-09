@@ -7,11 +7,11 @@ const User = require('../models/User');
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, district } = req.body;
+    const { name, email, password, district, role } = req.body;
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: 'Email already exists' });
     const hashed = await bcrypt.hash(password, 10);
-    const user = new User({ name, email, password: hashed, district });
+    const user = new User({ name, email, password: hashed, district, role: role || 'public' });
     await user.save();
     res.status(201).json({ message: 'Account created successfully!' });
   } catch (err) {
@@ -29,12 +29,12 @@ router.post('/login', async (req, res) => {
     console.log('User found:', user); // debug
 
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
-    
+
     const isMatch = await bcrypt.compare(password, user.password);
     console.log('Password match:', isMatch); // debug
 
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
-    
+
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
@@ -42,7 +42,7 @@ router.post('/login', async (req, res) => {
     );
     res.json({
       token,
-      user: { id: user._id, name: user.name, email: user.email, district: user.district }
+      user: { id: user._id, name: user.name, email: user.email, district: user.district, role: user.role }
     });
   } catch (err) {
     console.log('Login error:', err);

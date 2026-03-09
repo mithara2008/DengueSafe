@@ -1,40 +1,47 @@
-//import React, { useState, useEffect } from 'react';
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  TouchableOpacity, RefreshControl, ActivityIndicator
+  TouchableOpacity, RefreshControl, ActivityIndicator, Platform
 } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from '../../constants/colors';
-import { getHeatmapData } from '../../services/api';
+import { getHeatmapData, getDashboardStats } from '../../services/api';
+import AnimatedLoading from '../../components/AnimatedLoading';
 
 export default function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalCases: 0,
+    todayDeaths: 0,
     highRiskAreas: 0,
     activeClusters: 0,
-    recoveries: 0,
   });
   const [riskAreas, setRiskAreas] = useState([]);
 
   const fetchStats = async () => {
     try {
-      const data = await getHeatmapData();
-      const total = data.reduce((sum, d) => sum + d.cases, 0);
-      const high = data.filter(d => d.risk === 'High').length;
+      const [heatmapResponse, dashboardResponse] = await Promise.all([
+        getHeatmapData(),
+        getDashboardStats()
+      ]);
+
+      const heatmapData = heatmapResponse;
+      const dashboardData = dashboardResponse.data;
+
       setStats({
-        totalCases: total,
-        highRiskAreas: high,
-        activeClusters: 23,
-        recoveries: Math.floor(total * 0.87),
+        totalCases: dashboardData.todayCases || 0,
+        todayDeaths: dashboardData.todayDeaths || 0,
+        highRiskAreas: dashboardData.highRiskAreas || 0,
+        activeClusters: dashboardData.activeOutbreaks || 0,
       });
-      setRiskAreas(data.slice(0, 6).map(d => ({
+
+      setRiskAreas(heatmapData.slice(0, 6).map(d => ({
         district: d.district,
         cases: d.cases,
         risk: d.risk,
         color: d.risk === 'High' ? COLORS.danger :
-               d.risk === 'Medium' ? COLORS.warning : COLORS.safe,
+          d.risk === 'Medium' ? COLORS.warning : COLORS.safe,
       })));
     } catch (error) {
       console.log('Using mock stats');
@@ -66,17 +73,13 @@ export default function HomeScreen({ navigation }) {
   };
 
   if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={styles.loadingText}>Loading dashboard...</Text>
-      </View>
-    );
+    return <AnimatedLoading message="Fetching real-time stats..." />;
   }
 
   return (
     <ScrollView
       style={styles.container}
+      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -96,104 +99,127 @@ export default function HomeScreen({ navigation }) {
           style={styles.profileButton}
           onPress={() => navigation.navigate('Profile')}
         >
-          <Text style={styles.profileIcon}>👤</Text>
+          <Ionicons name="person-outline" size={24} color={COLORS.white} />
         </TouchableOpacity>
       </View>
 
-      {/* Alert Banner */}
-      <View style={styles.alertBanner}>
-        <Text style={styles.alertIcon}>⚠️</Text>
-        <View style={styles.alertTextContainer}>
-          <Text style={styles.alertTitle}>Active Outbreak Alert</Text>
-          <Text style={styles.alertText}>
-            High risk detected in Colombo & Gampaha districts
+      <View style={styles.contentContainer}>
+        {/* Alert Banner */}
+        <View style={styles.alertBanner}>
+          <View style={styles.alertIconContainer}>
+            <Ionicons name="warning" size={24} color={COLORS.accent} />
+          </View>
+          <View style={styles.alertTextContainer}>
+            <Text style={styles.alertTitle}>Active Outbreak Alert</Text>
+            <Text style={styles.alertText}>
+              High risk detected in Colombo & Gampaha districts
+            </Text>
+          </View>
+        </View>
+
+        {/* Stats Cards */}
+        <Text style={styles.sectionTitle}>Today's Overview</Text>
+        <View style={styles.statsGrid}>
+          <View style={[styles.statCard]}>
+            <View style={[styles.iconWrapper, { backgroundColor: '#FEE2E2' }]}>
+              <MaterialCommunityIcons name="virus" size={24} color={COLORS.danger} />
+            </View>
+            <Text style={styles.statNumber}>{stats.totalCases}</Text>
+            <Text style={styles.statLabel}>Total Cases</Text>
+          </View>
+          <View style={[styles.statCard]}>
+            <View style={[styles.iconWrapper, { backgroundColor: '#F3F4F6' }]}>
+              <Ionicons name="skull-outline" size={24} color="#374151" />
+            </View>
+            <Text style={styles.statNumber}>{stats.todayDeaths}</Text>
+            <Text style={styles.statLabel}>Total Deaths</Text>
+          </View>
+          <View style={[styles.statCard]}>
+            <View style={[styles.iconWrapper, { backgroundColor: '#FEF3C7' }]}>
+              <Ionicons name="location-outline" size={24} color={COLORS.warning} />
+            </View>
+            <Text style={styles.statNumber}>{stats.highRiskAreas}</Text>
+            <Text style={styles.statLabel}>High Risk Areas</Text>
+          </View>
+          <View style={[styles.statCard]}>
+            <View style={[styles.iconWrapper, { backgroundColor: '#E0E7FF' }]}>
+              <Ionicons name="analytics-outline" size={24} color="#4F46E5" />
+            </View>
+            <Text style={styles.statNumber}>{stats.activeClusters}</Text>
+            <Text style={styles.statLabel}>Active Clusters</Text>
+          </View>
+        </View>
+
+        {/* Quick Actions */}
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <View style={styles.quickActions}>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('Heatmap')}
+          >
+            <View style={[styles.actionIconWrapper, { backgroundColor: '#E0F2FE' }]}>
+              <Ionicons name="map-outline" size={28} color="#0284C7" />
+            </View>
+            <Text style={styles.actionText}>Heatmap</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('Alerts')}
+          >
+            <View style={[styles.actionIconWrapper, { backgroundColor: '#FFEDD5' }]}>
+              <Ionicons name="notifications-outline" size={28} color="#EA580C" />
+            </View>
+            <Text style={styles.actionText}>Alerts</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('Chatbot')}
+          >
+            <View style={[styles.actionIconWrapper, { backgroundColor: '#F3E8FF' }]}>
+              <Ionicons name="chatbubbles-outline" size={28} color="#9333EA" />
+            </View>
+            <Text style={styles.actionText}>Chatbot</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('Awareness')}
+          >
+            <View style={[styles.actionIconWrapper, { backgroundColor: '#DCFCE7' }]}>
+              <Ionicons name="book-outline" size={28} color="#16A34A" />
+            </View>
+            <Text style={styles.actionText}>Awareness</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Risk Areas */}
+        <Text style={styles.sectionTitle}>District Risk Levels (This Week)</Text>
+        <View style={styles.riskContainer}>
+          {riskAreas.map((area, index) => (
+            <View key={index} style={[styles.riskRow, index === riskAreas.length - 1 && { borderBottomWidth: 0 }]}>
+              <View style={[styles.riskBadge, { backgroundColor: area.color + '20' }]}>
+                <Text style={[styles.riskBadgeText, { color: area.color }]}>{area.risk}</Text>
+              </View>
+              <Text style={styles.districtName}>{area.district}</Text>
+              <Text style={styles.caseCount}>{area.cases} cases</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Prevention Tip */}
+        <View style={styles.tipCard}>
+          <View style={styles.tipHeader}>
+            <Ionicons name="bulb-outline" size={20} color={COLORS.primary} />
+            <Text style={styles.tipTitle}>Prevention Tip of the Day</Text>
+          </View>
+          <Text style={styles.tipText}>
+            Remove stagnant water from flower pots, coconut shells, and water
+            tanks around your home. Mosquitoes breed in still water!
           </Text>
         </View>
-      </View>
 
-      {/* Stats Cards */}
-      <Text style={styles.sectionTitle}>Today's Overview</Text>
-      <View style={styles.statsGrid}>
-        <View style={[styles.statCard, { borderTopColor: COLORS.danger }]}>
-          <Text style={styles.statNumber}>{stats.totalCases}</Text>
-          <Text style={styles.statLabel}>Total Cases</Text>
-          <Text style={styles.statIcon}>🦟</Text>
-        </View>
-        <View style={[styles.statCard, { borderTopColor: COLORS.warning }]}>
-          <Text style={styles.statNumber}>{stats.highRiskAreas}</Text>
-          <Text style={styles.statLabel}>High Risk Areas</Text>
-          <Text style={styles.statIcon}>📍</Text>
-        </View>
-        <View style={[styles.statCard, { borderTopColor: COLORS.accent }]}>
-          <Text style={styles.statNumber}>{stats.activeClusters}</Text>
-          <Text style={styles.statLabel}>Active Clusters</Text>
-          <Text style={styles.statIcon}>🔴</Text>
-        </View>
-        <View style={[styles.statCard, { borderTopColor: COLORS.safe }]}>
-          <Text style={styles.statNumber}>{stats.recoveries}</Text>
-          <Text style={styles.statLabel}>Recoveries</Text>
-          <Text style={styles.statIcon}>💚</Text>
-        </View>
+        <View style={styles.bottomSpacing} />
       </View>
-
-      {/* Quick Actions */}
-      <Text style={styles.sectionTitle}>Quick Actions</Text>
-      <View style={styles.quickActions}>
-        <TouchableOpacity
-          style={styles.actionCard}
-          onPress={() => navigation.navigate('Heatmap')}
-        >
-          <Text style={styles.actionIcon}>🗺️</Text>
-          <Text style={styles.actionText}>View Heatmap</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionCard}
-          onPress={() => navigation.navigate('Alerts')}
-        >
-          <Text style={styles.actionIcon}>🔔</Text>
-          <Text style={styles.actionText}>View Alerts</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionCard}
-          onPress={() => navigation.navigate('Chatbot')}
-        >
-          <Text style={styles.actionIcon}>🤖</Text>
-          <Text style={styles.actionText}>Ask Chatbot</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.actionCard}
-          onPress={() => navigation.navigate('Awareness')}
-        >
-          <Text style={styles.actionIcon}>📚</Text>
-          <Text style={styles.actionText}>Awareness</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Risk Areas */}
-      <Text style={styles.sectionTitle}>District Risk Levels</Text>
-      <View style={styles.riskContainer}>
-        {riskAreas.map((area, index) => (
-          <View key={index} style={styles.riskRow}>
-            <View style={[styles.riskBadge, { backgroundColor: area.color }]}>
-              <Text style={styles.riskBadgeText}>{area.risk}</Text>
-            </View>
-            <Text style={styles.districtName}>{area.district}</Text>
-            <Text style={styles.caseCount}>{area.cases} cases</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Prevention Tip */}
-      <View style={styles.tipCard}>
-        <Text style={styles.tipTitle}>💡 Prevention Tip of the Day</Text>
-        <Text style={styles.tipText}>
-          Remove stagnant water from flower pots, coconut shells, and water
-          tanks around your home. Mosquitoes breed in still water!
-        </Text>
-      </View>
-
-      <View style={styles.bottomSpacing} />
-    </ScrollView>
+    </ScrollView >
   );
 }
 
@@ -205,117 +231,159 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.background,
   },
-  loadingText: { marginTop: 10, color: COLORS.textLight, fontSize: 14 },
+  loadingText: { marginTop: 12, color: COLORS.textLight, fontSize: 16, fontWeight: '500' },
   header: {
     backgroundColor: COLORS.primary,
-    padding: 25,
-    paddingTop: 55,
+    padding: 24,
+    paddingTop: Platform.OS === 'ios' ? 60 : 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    elevation: 8,
   },
-  greeting: { color: '#C8E6C9', fontSize: 14 },
-  headerTitle: { color: COLORS.white, fontSize: 26, fontWeight: 'bold' },
-  headerSubtitle: { color: '#C8E6C9', fontSize: 12 },
+  greeting: { color: 'rgba(255,255,255,0.8)', fontSize: 15, marginBottom: 4, fontWeight: '500' },
+  headerTitle: { color: COLORS.white, fontSize: 28, fontWeight: '800', letterSpacing: 0.5 },
+  headerSubtitle: { color: 'rgba(255,255,255,0.9)', fontSize: 13, marginTop: 4, fontWeight: '400' },
   profileButton: {
     backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 25,
-    padding: 10,
+    borderRadius: 16,
+    padding: 12,
   },
-  profileIcon: { fontSize: 22 },
+  contentContainer: {
+    paddingHorizontal: 20,
+    marginTop: -15, // Overlap effect
+  },
   alertBanner: {
-    backgroundColor: '#FFF3E0',
-    margin: 15,
-    padding: 15,
-    borderRadius: 12,
+    backgroundColor: '#FFFBEB',
+    marginTop: 35,
+    marginBottom: 10,
+    padding: 16,
+    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    borderLeftWidth: 4,
-    borderLeftColor: COLORS.accent,
+    borderWidth: 1,
+    borderColor: '#FEF3C7',
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  alertIcon: { fontSize: 24, marginRight: 10 },
+  alertIconContainer: { marginRight: 12, padding: 8, backgroundColor: '#FEF3C7', borderRadius: 12 },
   alertTextContainer: { flex: 1 },
-  alertTitle: { fontWeight: 'bold', color: COLORS.accent, fontSize: 14 },
-  alertText: { color: COLORS.text, fontSize: 12, marginTop: 2 },
+  alertTitle: { fontWeight: '700', color: COLORS.accent, fontSize: 15, marginBottom: 4 },
+  alertText: { color: COLORS.text, fontSize: 13, lineHeight: 18 },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 19,
+    fontWeight: '700',
     color: COLORS.text,
-    marginHorizontal: 15,
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 24,
+    marginBottom: 16,
+    letterSpacing: -0.2,
   },
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 10,
     justifyContent: 'space-between',
   },
   statCard: {
     backgroundColor: COLORS.white,
-    borderRadius: 12,
-    padding: 15,
+    borderRadius: 20,
+    padding: 18,
     width: '48%',
-    marginBottom: 10,
-    borderTopWidth: 4,
-    elevation: 2,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 3,
   },
-  statNumber: { fontSize: 28, fontWeight: 'bold', color: COLORS.text },
-  statLabel: { fontSize: 12, color: COLORS.textLight, marginTop: 4 },
-  statIcon: { fontSize: 20, position: 'absolute', top: 15, right: 15 },
+  iconWrapper: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  statNumber: { fontSize: 26, fontWeight: '800', color: COLORS.text, marginBottom: 4 },
+  statLabel: { fontSize: 13, color: COLORS.textLight, fontWeight: '500' },
   quickActions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 10,
     justifyContent: 'space-between',
   },
   actionCard: {
     backgroundColor: COLORS.white,
-    borderRadius: 12,
-    padding: 15,
-    width: '48%',
-    marginBottom: 10,
+    borderRadius: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    width: '23%',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
     elevation: 2,
   },
-  actionIcon: { fontSize: 30, marginBottom: 8 },
-  actionText: { fontSize: 13, fontWeight: '600', color: COLORS.text },
+  actionIconWrapper: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  actionText: { fontSize: 12, fontWeight: '600', color: COLORS.text, textAlign: 'center' },
   riskContainer: {
     backgroundColor: COLORS.white,
-    marginHorizontal: 15,
-    borderRadius: 12,
-    padding: 10,
+    borderRadius: 20,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
     elevation: 2,
   },
   riskRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
+    borderBottomColor: '#F1F5F9',
   },
   riskBadge: {
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    marginRight: 10,
-    width: 70,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginRight: 14,
+    width: 75,
     alignItems: 'center',
   },
-  riskBadgeText: { color: COLORS.white, fontSize: 11, fontWeight: 'bold' },
-  districtName: { flex: 1, fontSize: 14, color: COLORS.text, fontWeight: '500' },
-  caseCount: { fontSize: 13, color: COLORS.textLight },
+  riskBadgeText: { fontSize: 12, fontWeight: '700' },
+  districtName: { flex: 1, fontSize: 15, color: COLORS.text, fontWeight: '600' },
+  caseCount: { fontSize: 14, color: COLORS.textLight, fontWeight: '500' },
   tipCard: {
-    backgroundColor: '#E8F5E9',
-    margin: 15,
-    padding: 15,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: COLORS.primary,
+    backgroundColor: '#F0FDF4',
+    marginTop: 24,
+    padding: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#DCFCE7',
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  tipTitle: { fontWeight: 'bold', color: COLORS.primary, fontSize: 14, marginBottom: 8 },
-  tipText: { color: COLORS.text, fontSize: 13, lineHeight: 20 },
-  bottomSpacing: { height: 20 },
+  tipHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  tipTitle: { fontWeight: '700', color: COLORS.primary, fontSize: 16, marginLeft: 8 },
+  tipText: { color: COLORS.text, fontSize: 14, lineHeight: 22, fontWeight: '400' },
+  bottomSpacing: { height: 30 },
 });

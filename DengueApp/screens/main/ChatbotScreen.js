@@ -5,13 +5,14 @@ import {
   TextInput, TouchableOpacity, KeyboardAvoidingView,
   Platform, ActivityIndicator
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../constants/colors';
 
 export default function ChatbotScreen() {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: 'හෙලෝ! 👋 I am DengueSafe Assistant. I can help you with information about dengue and chikungunya in Sri Lanka.\n\nYou can ask me:\n• Is there dengue in my area?\n• What are the symptoms?\n• How do I prevent dengue?\n• Which districts are high risk?',
+      text: 'Hello! 👋 I am DengueSafe Assistant. I can help you with information about dengue and chikungunya in Sri Lanka.\n\nYou can ask me:\n• Is there dengue in my area?\n• What are the symptoms?\n• How do I prevent dengue?\n• Which districts are high risk?',
       isBot: true,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     }
@@ -21,12 +22,12 @@ export default function ChatbotScreen() {
   const scrollViewRef = useRef();
 
   const quickQuestions = [
-    '🦟 Dengue symptoms?',
-    '📍 High risk areas?',
-    '🛡️ How to prevent?',
-    '🌡️ When to see doctor?',
-    '💧 Remove breeding sites?',
-    '📊 Latest case count?',
+    { text: 'Dengue symptoms', icon: 'thermometer-outline' },
+    { text: 'High risk areas', icon: 'map-outline' },
+    { text: 'How to prevent', icon: 'shield-checkmark-outline' },
+    { text: 'When to see doctor', icon: 'medical-outline' },
+    { text: 'Breeding sites', icon: 'water-outline' },
+    { text: 'Latest case count', icon: 'analytics-outline' },
   ];
 
   const getBotResponse = (userMessage) => {
@@ -41,7 +42,7 @@ export default function ChatbotScreen() {
     }
 
     if (msg.includes('prevent') || msg.includes('protection') || msg.includes('safe')) {
-      return `🛡️ **Dengue Prevention Tips:**\n\n💧 **Remove Stagnant Water:**\n• Empty flower pots regularly\n• Clean coconut shells\n• Cover water tanks\n• Clear blocked gutters\n\n🏠 **Protect Your Home:**\n• Use mosquito nets at night\n• Install window screens\n• Use mosquito repellent\n• Wear long sleeves at dawn/dusk\n\n🌿 **Sinhala Tip:**\nගෙදර වටේ ජලය එකතු නොවෙන්න බලාගන්න!\n\n🌿 **Tamil Tip:**\nமழைக்காலத்தில் தண்ணீர் தேங்காமல் பார்த்துக்கொள்ளுங்கள்!`;
+      return `🛡️ **Dengue Prevention Tips:**\n\n💧 **Remove Stagnant Water:**\n• Empty flower pots regularly\n• Clean coconut shells\n• Cover water tanks\n• Clear blocked gutters\n\n🏠 **Protect Your Home:**\n• Use mosquito nets at night\n• Install window screens\n• Use mosquito repellent\n• Wear long sleeves at dawn/dusk`;
     }
 
     if (msg.includes('colombo') || msg.includes('my area') || msg.includes('near me')) {
@@ -60,55 +61,50 @@ export default function ChatbotScreen() {
       return `📊 **Latest Sri Lanka Dengue Update:**\n\n🦟 Total Active Cases: 1,247\n📍 High Risk Districts: 3\n🔴 Active Clusters: 23\n💚 Recoveries: 1,089\n\n📈 **Trend:** Cases are rising in Western Province due to recent heavy rainfall.\n\n🔔 Our ML model predicts a 12% increase in cases over the next 7 days.\n\nCheck the Heatmap screen for detailed district-by-district information!`;
     }
 
-    if (msg.includes('chikungunya')) {
-      return `🦟 **Chikungunya Information:**\n\nChikungunya is also spread by Aedes mosquitoes (same as dengue).\n\n**Symptoms:**\n• Sudden fever\n• Severe joint pain (may last weeks)\n• Muscle pain\n• Headache\n• Rash\n\n**Key Difference from Dengue:**\nJoint pain in chikungunya is more severe and longer lasting.\n\n**Prevention:** Same as dengue — remove stagnant water and use mosquito repellent!\n\nVisit a doctor if symptoms appear. 🏥`;
+    if (msg.includes('hello') || msg.includes('hi')) {
+      return `Hello! 👋\n\nI am DengueSafe Assistant, here to help you stay safe from dengue and chikungunya in Sri Lanka.\n\nHow can I help you today? You can ask me about:\n• Symptoms\n• High risk areas\n• Prevention tips\n• When to see a doctor`;
     }
 
-    if (msg.includes('hello') || msg.includes('hi') || msg.includes('ayubowan') || msg.includes('vanakkam')) {
-      return `ආයුබෝවන්! வணக்கம்! Hello! 👋\n\nI am DengueSafe Assistant, here to help you stay safe from dengue and chikungunya in Sri Lanka.\n\nHow can I help you today? You can ask me about:\n• Symptoms\n• High risk areas\n• Prevention tips\n• When to see a doctor`;
-    }
-
-    return `🤖 I'm not sure about that specific question. Here are things I can help with:\n\n• 🦟 Dengue/Chikungunya symptoms\n• 📍 High risk areas in Sri Lanka\n• 🛡️ Prevention and protection tips\n• 🏥 When to see a doctor\n• 💧 Removing breeding sites\n• 📊 Latest case counts\n\nPlease try asking one of these questions or tap the quick questions below! 😊`;
+    return `🤖 I'm not sure about that specific question. Here are things I can help with:\n\n• Dengue/Chikungunya symptoms\n• High risk areas in Sri Lanka\n• Prevention and protection tips\n• When to see a doctor\n• Removing breeding sites\n• Latest case counts\n\nPlease try asking one of these questions! 😊`;
   };
 
   const sendMessage = async (text) => {
-  const messageText = text || inputText.trim();
-  if (!messageText) return;
+    const messageText = text || inputText.trim();
+    if (!messageText) return;
 
-  const userMessage = {
-    id: messages.length + 1,
-    text: messageText,
-    isBot: false,
-    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    const userMessage = {
+      id: messages.length + 1,
+      text: messageText,
+      isBot: false,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+    setLoading(true);
+
+    try {
+      const response = await sendChatMessage(messageText);
+      const botResponse = {
+        id: messages.length + 2,
+        text: response.reply,
+        isBot: true,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      const botResponse = {
+        id: messages.length + 2,
+        text: getBotResponse(messageText),
+        isBot: true,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages(prev => [...prev, botResponse]);
+    } finally {
+      setLoading(false);
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }
   };
-
-  setMessages(prev => [...prev, userMessage]);
-  setInputText('');
-  setLoading(true);
-
-  try {
-    const response = await sendChatMessage(messageText);
-    const botResponse = {
-      id: messages.length + 2,
-      text: response.reply,
-      isBot: true,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-    setMessages(prev => [...prev, botResponse]);
-  } catch (error) {
-    // Fallback to local responses if API fails
-    const botResponse = {
-      id: messages.length + 2,
-      text: getBotResponse(messageText),
-      isBot: true,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-    setMessages(prev => [...prev, botResponse]);
-  } finally {
-    setLoading(false);
-    scrollViewRef.current?.scrollToEnd({ animated: true });
-  }
-};
 
   return (
     <KeyboardAvoidingView
@@ -118,11 +114,14 @@ export default function ChatbotScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.botAvatar}>
-          <Text style={styles.botAvatarText}>🤖</Text>
+          <Ionicons name="chatbubbles" size={30} color={COLORS.primary} />
         </View>
-        <View>
+        <View style={styles.headerTextContainer}>
           <Text style={styles.headerTitle}>DengueSafe Assistant</Text>
-          <Text style={styles.headerStatus}>🟢 Online — Ask me anything!</Text>
+          <View style={styles.statusRow}>
+            <View style={styles.onlineDot} />
+            <Text style={styles.headerStatus}>Online — Ask me anything</Text>
+          </View>
         </View>
       </View>
 
@@ -132,6 +131,7 @@ export default function ChatbotScreen() {
         style={styles.messagesContainer}
         contentContainerStyle={styles.messagesContent}
         onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+        showsVerticalScrollIndicator={false}
       >
         {messages.map(message => (
           <View
@@ -143,7 +143,7 @@ export default function ChatbotScreen() {
           >
             {message.isBot && (
               <View style={styles.botAvatarSmall}>
-                <Text style={styles.botAvatarSmallText}>🤖</Text>
+                <Ionicons name="chatbubbles" size={16} color={COLORS.white} />
               </View>
             )}
             <View style={[
@@ -167,12 +167,12 @@ export default function ChatbotScreen() {
         ))}
 
         {loading && (
-          <View style={styles.botRow}>
+          <View style={[styles.messageRow, styles.botRow]}>
             <View style={styles.botAvatarSmall}>
-              <Text style={styles.botAvatarSmallText}>🤖</Text>
+              <Ionicons name="chatbubbles" size={16} color={COLORS.white} />
             </View>
-            <View style={styles.typingBubble}>
-              <ActivityIndicator size="small" color={COLORS.primary} />
+            <View style={[styles.messageBubble, styles.typingBubble]}>
+              <ActivityIndicator size="small" color={COLORS.primary} style={{ marginRight: 8 }} />
               <Text style={styles.typingText}>Typing...</Text>
             </View>
           </View>
@@ -180,28 +180,31 @@ export default function ChatbotScreen() {
       </ScrollView>
 
       {/* Quick Questions */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.quickContainer}
-        contentContainerStyle={styles.quickContent}
-      >
-        {quickQuestions.map((q, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.quickBtn}
-            onPress={() => sendMessage(q)}
-          >
-            <Text style={styles.quickBtnText}>{q}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      <View style={styles.quickContainerWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.quickContainer}
+          contentContainerStyle={styles.quickContent}
+        >
+          {quickQuestions.map((q, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.quickBtn}
+              onPress={() => sendMessage(q.text)}
+            >
+              <Ionicons name={q.icon} size={15} color={COLORS.primary} style={styles.quickBtnIcon} />
+              <Text style={styles.quickBtnText}>{q.text}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Input */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Ask about dengue, symptoms, prevention..."
+          placeholder="Ask about dengue, prevention..."
           value={inputText}
           onChangeText={setInputText}
           multiline
@@ -213,7 +216,7 @@ export default function ChatbotScreen() {
           onPress={() => sendMessage()}
           disabled={!inputText.trim()}
         >
-          <Text style={styles.sendBtnText}>➤</Text>
+          <Ionicons name="send" size={18} color={COLORS.white} style={styles.sendIcon} />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -224,117 +227,140 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   header: {
     backgroundColor: COLORS.primary,
-    padding: 20,
-    paddingTop: 55,
+    padding: 24,
+    paddingTop: Platform.OS === 'ios' ? 60 : 50,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    elevation: 8,
   },
   botAvatar: {
-    width: 45,
-    height: 45,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
   },
-  botAvatarText: { fontSize: 24 },
-  headerTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: 'bold' },
-  headerStatus: { color: '#C8E6C9', fontSize: 12, marginTop: 2 },
-  messagesContainer: { flex: 1 },
-  messagesContent: { padding: 15, paddingBottom: 5 },
-  messageRow: { flexDirection: 'row', marginBottom: 12, alignItems: 'flex-end' },
+  headerTextContainer: { marginLeft: 16 },
+  headerTitle: { color: COLORS.white, fontSize: 20, fontWeight: '800', letterSpacing: 0.5 },
+  statusRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
+  onlineDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#10B981', marginRight: 6 },
+  headerStatus: { color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: '500' },
+  messagesContainer: { flex: 1, backgroundColor: '#F8FAFC' },
+  messagesContent: { padding: 20, paddingBottom: 10 },
+  messageRow: { flexDirection: 'row', marginBottom: 16, alignItems: 'flex-end' },
   botRow: { justifyContent: 'flex-start' },
   userRow: { justifyContent: 'flex-end' },
   botAvatarSmall: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 6,
+    marginRight: 10,
     marginBottom: 4,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  botAvatarSmallText: { fontSize: 14 },
   messageBubble: {
-    maxWidth: '78%',
-    borderRadius: 16,
-    padding: 12,
-    elevation: 1,
+    maxWidth: '75%',
+    borderRadius: 20,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
   botBubble: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.white,
     borderBottomLeftRadius: 4,
   },
   userBubble: {
     backgroundColor: COLORS.primary,
     borderBottomRightRadius: 4,
   },
-  messageText: { fontSize: 14, lineHeight: 20 },
-  botText: { color: COLORS.text },
-  userText: { color: '#FFFFFF' },
-  messageTime: { fontSize: 10, marginTop: 4 },
-  botTime: { color: COLORS.textLight },
-  userTime: { color: 'rgba(255,255,255,0.7)', textAlign: 'right' },
   typingBubble: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: COLORS.white,
     borderBottomLeftRadius: 4,
   },
-  typingText: { color: COLORS.textLight, fontSize: 13 },
-  quickContainer: {
-    maxHeight: 45,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-  },
-  quickContent: { padding: 8, gap: 8 },
+  typingText: { color: COLORS.textLight, fontSize: 14, fontWeight: '500' },
+  messageText: { fontSize: 15, lineHeight: 22 },
+  botText: { color: COLORS.text, fontWeight: '400' },
+  userText: { color: COLORS.white, fontWeight: '500' },
+  messageTime: { fontSize: 11, marginTop: 8, fontWeight: '500' },
+  botTime: { color: COLORS.textLight },
+  userTime: { color: 'rgba(255,255,255,0.8)', textAlign: 'right' },
+  quickContainerWrapper: { backgroundColor: COLORS.white, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
+  quickContainer: { flexGrow: 0 },
+  quickContent: { padding: 12, gap: 10 },
   quickBtn: {
-    backgroundColor: '#E8F5E9',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0FDF4',
     borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderWidth: 1,
-    borderColor: COLORS.secondary,
+    borderColor: '#DCFCE7',
   },
-  quickBtnText: { fontSize: 12, color: COLORS.primary, fontWeight: '600' },
+  quickBtnIcon: { marginRight: 6 },
+  quickBtnText: { fontSize: 13, color: COLORS.primary, fontWeight: '600' },
   inputContainer: {
     flexDirection: 'row',
-    padding: 10,
-    backgroundColor: '#FFFFFF',
+    padding: 16,
+    backgroundColor: COLORS.white,
     alignItems: 'flex-end',
-    gap: 8,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
+    borderTopColor: '#F1F5F9',
   },
   input: {
     flex: 1,
-    backgroundColor: COLORS.background,
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    fontSize: 14,
-    maxHeight: 100,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    paddingBottom: 14,
+    fontSize: 15,
+    maxHeight: 120,
     color: COLORS.text,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: COLORS.border,
+    marginRight: 12,
   },
   sendBtn: {
     backgroundColor: COLORS.primary,
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 2,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
+    marginBottom: 2,
   },
-  sendBtnDisabled: { backgroundColor: '#BDBDBD' },
-  sendBtnText: { color: '#FFFFFF', fontSize: 16 },
+  sendBtnDisabled: { backgroundColor: '#CBD5E1', shadowOpacity: 0, elevation: 0 },
+  sendIcon: { marginLeft: 4 },
 });
