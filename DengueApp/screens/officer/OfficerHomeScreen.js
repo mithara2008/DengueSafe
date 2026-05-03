@@ -12,29 +12,29 @@ export default function OfficerHomeScreen({ navigation }) {
     const [refreshing, setRefreshing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({
-        totalCases: 0,
-        todayDeaths: 0,
-        highRiskAreas: 0,
+        todayCases: 0,
+        weeklyCases: 0,
         activeClusters: 0,
+        totalDeaths: 0,
     });
 
     const fetchStats = async () => {
         try {
             const response = await getDashboardStats();
-            const dashboardData = response.data; // Web backend wraps it in { success: true, data: ... }
+            const dashboardData = response.data;
             setStats({
-                totalCases: dashboardData.todayCases || 0,
-                todayDeaths: dashboardData.todayDeaths || 0,
-                highRiskAreas: dashboardData.highRiskAreas || 0,
+                todayCases: dashboardData.todayCases || 0,
+                weeklyCases: dashboardData.weeklyCases || 0,
                 activeClusters: dashboardData.activeOutbreaks || 0,
+                totalDeaths: dashboardData.totalDeaths || 0,
             });
         } catch (error) {
             console.log('Using mock officer stats');
             setStats({
-                totalCases: 1247,
-                todayDeaths: 2,
-                highRiskAreas: 8,
-                activeClusters: 23,
+                todayCases: 0,
+                weeklyCases: 770,
+                activeClusters: 2,
+                totalDeaths: 57,
             });
         } finally {
             setLoading(false);
@@ -83,8 +83,11 @@ export default function OfficerHomeScreen({ navigation }) {
             </View>
 
             <View style={styles.contentContainer}>
-                {/* Quick Actions */}
+
+                {/* Field Operations */}
                 <Text style={styles.sectionTitle}>Field Operations</Text>
+
+                {/* Upload Data Card */}
                 <TouchableOpacity
                     style={styles.uploadCard}
                     onPress={() => navigation.navigate('UploadData')}
@@ -100,33 +103,48 @@ export default function OfficerHomeScreen({ navigation }) {
                     <Ionicons name="chevron-forward" size={24} color={COLORS.white} />
                 </TouchableOpacity>
 
+                {/* Field Operations Unified Card */}
+                <View style={styles.actionRow}>
+                    <TouchableOpacity
+                        style={styles.actionCard}
+                        onPress={() => navigation.navigate('FieldOperations')}
+                        activeOpacity={0.8}
+                    >
+                        <View style={[styles.actionIconWrapper, { backgroundColor: '#F0FDF4' }]}>
+                            <Ionicons name="clipboard-outline" size={28} color="#16A34A" />
+                        </View>
+                        <Text style={styles.actionTitle}>Incident Report</Text>
+                        <Text style={styles.actionSubtitle}>Issue Fines & Record Spots</Text>
+                    </TouchableOpacity>
+                </View>
+
                 {/* Stats Cards */}
-                <Text style={styles.sectionTitle}>National Overview (Today)</Text>
+                <Text style={styles.sectionTitle}>National Overview</Text>
                 <View style={styles.statsGrid}>
                     <View style={[styles.statCard]}>
-                        <View style={[styles.iconWrapper, { backgroundColor: '#FEE2E2' }]}>
-                            <MaterialCommunityIcons name="virus" size={24} color={COLORS.danger} />
+                        <View style={[styles.iconWrapper, { backgroundColor: '#F0FDF4' }]}>
+                            <MaterialCommunityIcons name="virus" size={24} color="#16A34A" />
                         </View>
-                        <Text style={styles.statNumber}>{stats.totalCases}</Text>
-                        <Text style={styles.statLabel}>Total Cases</Text>
+                        <Text style={styles.statNumber}>{stats.todayCases}</Text>
+                        <Text style={styles.statLabel}>Today Cases</Text>
                     </View>
                     <View style={[styles.statCard]}>
-                        <View style={[styles.iconWrapper, { backgroundColor: '#F3F4F6' }]}>
-                            <Ionicons name="skull-outline" size={24} color="#374151" />
+                        <View style={[styles.iconWrapper, { backgroundColor: '#E0F2FE' }]}>
+                            <Ionicons name="calendar-outline" size={24} color="#0EA5E9" />
                         </View>
-                        <Text style={styles.statNumber}>{stats.todayDeaths}</Text>
+                        <Text style={styles.statNumber}>{stats.weeklyCases}</Text>
+                        <Text style={styles.statLabel}>Weekly Total</Text>
+                    </View>
+                    <View style={[styles.statCard]}>
+                        <View style={[styles.iconWrapper, { backgroundColor: '#FEE2E2' }]}>
+                            <Ionicons name="skull-outline" size={24} color="#EF4444" />
+                        </View>
+                        <Text style={styles.statNumber}>{stats.totalDeaths}</Text>
                         <Text style={styles.statLabel}>Total Deaths</Text>
                     </View>
                     <View style={[styles.statCard]}>
-                        <View style={[styles.iconWrapper, { backgroundColor: '#FEF3C7' }]}>
-                            <Ionicons name="location-outline" size={24} color={COLORS.warning} />
-                        </View>
-                        <Text style={styles.statNumber}>{stats.highRiskAreas}</Text>
-                        <Text style={styles.statLabel}>High Risk Areas</Text>
-                    </View>
-                    <View style={[styles.statCard]}>
-                        <View style={[styles.iconWrapper, { backgroundColor: '#E0E7FF' }]}>
-                            <Ionicons name="analytics-outline" size={24} color="#4F46E5" />
+                        <View style={[styles.iconWrapper, { backgroundColor: '#F5F3FF' }]}>
+                            <Ionicons name="analytics-outline" size={24} color="#8B5CF6" />
                         </View>
                         <Text style={styles.statNumber}>{stats.activeClusters}</Text>
                         <Text style={styles.statLabel}>Active Clusters</Text>
@@ -142,7 +160,7 @@ export default function OfficerHomeScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: COLORS.background },
     header: {
-        backgroundColor: '#0F172A', // Dark professional blue for officer portal
+        backgroundColor: '#0F172A',
         padding: 24,
         paddingTop: Platform.OS === 'ios' ? 60 : 50,
         borderBottomLeftRadius: 36,
@@ -170,6 +188,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         marginTop: -10,
     },
+    sectionTitle: {
+        fontSize: 19,
+        fontWeight: '700',
+        color: COLORS.text,
+        marginTop: 24,
+        marginBottom: 16,
+        letterSpacing: -0.2,
+    },
     uploadCard: {
         backgroundColor: COLORS.primary,
         borderRadius: 24,
@@ -191,28 +217,48 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginRight: 16,
     },
-    uploadTextContainer: {
-        flex: 1,
+    uploadTextContainer: { flex: 1 },
+    uploadTitle: { color: COLORS.white, fontSize: 18, fontWeight: '700', marginBottom: 4 },
+    uploadSubtitle: { color: 'rgba(255,255,255,0.85)', fontSize: 13, lineHeight: 18 },
+
+    // New action row styles
+    actionRow: {
+        flexDirection: 'row',
+        gap: 14,
+        marginTop: 14,
     },
-    uploadTitle: {
-        color: COLORS.white,
-        fontSize: 18,
-        fontWeight: '700',
+    actionCard: {
+        flex: 1,
+        backgroundColor: COLORS.white,
+        borderRadius: 20,
+        padding: 18,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.04,
+        shadowRadius: 10,
+        elevation: 3,
+    },
+    actionIconWrapper: {
+        width: 52,
+        height: 52,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 12,
+    },
+    actionTitle: {
+        fontSize: 15,
+        fontWeight: '800',
+        color: COLORS.text,
         marginBottom: 4,
     },
-    uploadSubtitle: {
-        color: 'rgba(255,255,255,0.85)',
-        fontSize: 13,
-        lineHeight: 18,
+    actionSubtitle: {
+        fontSize: 12,
+        color: COLORS.textLight,
+        fontWeight: '500',
+        lineHeight: 16,
     },
-    sectionTitle: {
-        fontSize: 19,
-        fontWeight: '700',
-        color: COLORS.text,
-        marginTop: 24,
-        marginBottom: 16,
-        letterSpacing: -0.2,
-    },
+
     statsGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -230,7 +276,14 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 3,
     },
-    iconWrapper: { width: 48, height: 48, borderRadius: 24, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
+    iconWrapper: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
     statNumber: { fontSize: 26, fontWeight: '800', color: COLORS.text, marginBottom: 4 },
     statLabel: { fontSize: 13, color: COLORS.textLight, fontWeight: '500' },
     bottomSpacing: { height: 100 },

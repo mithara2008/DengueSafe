@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../constants/colors';
+import FieldOperationsScreen from '../screens/officer/FieldOperationsScreen';
 
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
@@ -81,7 +82,6 @@ function OfficerTabs() {
           if (route.name === 'Dashboard') iconName = focused ? 'home' : 'home-outline';
           else if (route.name === 'Heatmap') iconName = focused ? 'map' : 'map-outline';
           else if (route.name === 'Alerts') iconName = focused ? 'notifications' : 'notifications-outline';
-          else if (route.name === 'Awareness') iconName = focused ? 'book' : 'book-outline';
 
           return (
             <View style={focused ? styles.iconFocused : styles.iconContainer}>
@@ -115,7 +115,6 @@ function OfficerTabs() {
       <Tab.Screen name="Dashboard" component={OfficerHomeScreen} />
       <Tab.Screen name="Heatmap" component={HeatmapScreen} />
       <Tab.Screen name="Alerts" component={AlertsScreen} />
-      <Tab.Screen name="Awareness" component={AwarenessScreen} />
     </Tab.Navigator>
   );
 }
@@ -130,6 +129,7 @@ export default function AppNavigator() {
         <Stack.Screen name="MainOfficer" component={OfficerTabs} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="UploadData" component={UploadDataScreen} />
+        <Stack.Screen name="FieldOperations" component={FieldOperationsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -10,7 +10,7 @@ const api = axios.create({
 
 // WEB BACKEND STATS
 export const getDashboardStats = async () => {
-  const response = await axios.get(`${WEB_BACKEND_URL}/api/heatmap/dashboard-stats`);
+  const response = await api.get('/api/phi/dashboard-stats');
   return response.data;
 };
 
@@ -88,5 +88,27 @@ export const submitCaseReport = async (reportData) => {
 
 export const uploadCaseData = async (district, cases) => {
   const response = await api.post('/api/update-cases', { district, cases });
+  return response.data;
+};
+
+// PHI Fine
+export const issueFine = async (violationData) => {
+  const response = await api.post('/api/phi/violations', violationData);
+  return response.data;
+};
+
+export const getViolations = async () => {
+  const response = await api.get('/api/phi/violations');
+  return response.data;
+};
+
+// Breeding Spots
+export const recordBreedingSpot = async (spotData) => {
+  const response = await api.post('/api/phi/breeding-spots', spotData);
+  return response.data;
+};
+
+export const getBreedingSpots = async () => {
+  const response = await api.get('/api/phi/breeding-spots');
   return response.data;
 };
